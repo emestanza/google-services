@@ -124,7 +124,6 @@ namespace GoogleServices
         /// <returns>String - dirección de la credencial</returns>
         public static string getCredentialFilePath()
         {
-            //return AppDomain.CurrentDomain.BaseDirectory + "GoogleAPI" + "\\"+"DriveCredentials"+ "\\" + ConfigurationManager.AppSettings["GDRIVE_CRED_FILE_NAME"];
             return HostingEnvironment.MapPath(@"~/Statics/Google") + "\\" + ConfigurationManager.AppSettings["GDRIVE_CRED_FILE_NAME"];
         }
 
@@ -187,10 +186,6 @@ namespace GoogleServices
                     FileMetaData.Name = Path.GetFileName(file.FileName);
                     FileMetaData.MimeType = MimeTypes.GetMimeType(path);
                     FileMetaData.Parents = new List<string>();
-                    //FileMetaData.Parents.Add(ConfigurationManager.AppSettings["GDRIVE_SITRAD_FILE_ID"]);
-
-                    //string carpeta = string.IsNullOrWhiteSpace(Request["carpeta"]) ? ConfigurationManager.AppSettings["GDRIVE_DEFAULT_FOLDER_ID"].ToString() : Request["carpeta"].ToString();
-
                     if (carpeta != null)  FileMetaData.Parents.Add(carpeta);
 
                     FilesResource.CreateMediaUpload request;
@@ -367,18 +362,15 @@ namespace GoogleServices
                 {
                     case DownloadStatus.Downloading:
                         {
-                            //Console.WriteLine(progress.BytesDownloaded);
                             break;
                         }
                     case DownloadStatus.Completed:
                         {
-                            //Console.WriteLine("Download complete.");
                             SaveStream(stream1, FilePath);
                             break;
                         }
                     case DownloadStatus.Failed:
                         {
-                            //Console.WriteLine("Download failed.");
                             break;
                         }
                 }
@@ -465,10 +457,8 @@ namespace GoogleServices
         /// <returns></returns>
         public static string Delete(string file_ID)
         {
-
             try
             {
-                //DriveService service = AuthenticateServiceAccount();
                 // Initial validation.
                 if (service == null)
                     throw new ArgumentNullException("service");
@@ -482,10 +472,10 @@ namespace GoogleServices
             catch (Exception ex)
             {
                 throw new Exception("Request Files.Delete failed.", ex);
-                return "-1";
+                //return "-1";
             }
 
-            return "-1";
+            //return "-1";
         }
 
 
@@ -519,8 +509,6 @@ namespace GoogleServices
                 throw new Exception("Request Files.Delete failed.", ex);
             }
         }
-
-
     }
 
     /// <summary>

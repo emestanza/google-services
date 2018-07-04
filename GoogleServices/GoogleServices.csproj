@@ -70,8 +70,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GDriveUtils.cs" />
-    <Compile Include="MimeTypes.cs" />
+    <Compile Include="Drive\GDriveUtils.cs" />
+    <Compile Include="Drive\MimeTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
