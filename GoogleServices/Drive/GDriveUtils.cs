@@ -9,7 +9,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Configuration;
 using System.Threading;
 using Google.Apis.Util.Store;
-//using log4net;
 using System.Linq;
 using System.Web;
 using Google.Apis.Requests;
@@ -20,7 +19,6 @@ namespace GoogleServices
 {
     public static class GDriveUtils
     {
-       // private static readonly ILog log = LogManager.GetLogger(typeof(GDriveUtils));
 
         /// <summary>
         /// Atributo que tendra la conexion con la API de Google, se invoca una sola vez para uso global
@@ -43,7 +41,6 @@ namespace GoogleServices
             try
             {
                 string serviceAccountCredentialFilePath = getCredentialFilePath();
-                //log.Debug("serviceAccountCredentialFilePath:" + getCredentialFilePath());
                 if (string.IsNullOrEmpty(serviceAccountCredentialFilePath))
                     throw new Exception("Path to the service account credentials file is required.");
 
@@ -53,8 +50,6 @@ namespace GoogleServices
                 if (string.IsNullOrEmpty(ConfigurationManager.AppSettings["GDRIVE_CRED_EMAIL"]))
                     throw new Exception("ServiceAccountEmail is required.");
 
-                //log.Debug("serviceAccountCredentialFilePath:" + serviceAccountCredentialFilePath);
-                //log.Debug("AppDomain.CurrentDomain.BaseDirectory:" + AppDomain.CurrentDomain.BaseDirectory);
                 // These are the scopes of permissions you need. It is best to request only what you need and not all of them
                 string[] scopes = { DriveService.Scope.Drive };
 
@@ -107,13 +102,6 @@ namespace GoogleServices
             }
             catch (Exception ex)
             {
-                //log.Error(String.Format("Error de comunicación: [{0}: {1}]\r\nStack Trace:\r\n{2}",
-                //     ex.Source, ex.Message, ex.StackTrace));
-                //if (ex.InnerException != null)
-                //{
-                //    log.Error(String.Format("Inner Exception: [{0}: {1}]\r\nStack Trace:\r\n{2}",
-                //        ex.InnerException.Source, ex.InnerException.Message, ex.InnerException.StackTrace));
-                //}
                 throw new Exception("CreateServiceAccountDriveFailed", ex);
             }
         }
@@ -186,7 +174,7 @@ namespace GoogleServices
                     FileMetaData.Name = Path.GetFileName(file.FileName);
                     FileMetaData.MimeType = MimeTypes.GetMimeType(path);
                     FileMetaData.Parents = new List<string>();
-                    if (carpeta != null)  FileMetaData.Parents.Add(carpeta);
+                    if (carpeta != null) FileMetaData.Parents.Add(carpeta);
 
                     FilesResource.CreateMediaUpload request;
                     using (var stream = new System.IO.FileStream(path, System.IO.FileMode.Open))
@@ -202,14 +190,7 @@ namespace GoogleServices
             }
             catch (Exception ex)
             {
-                //log.Error(String.Format("Error de comunicación: [{0}: {1}]\r\nStack Trace:\r\n{2}",
-                //     ex.Source, ex.Message, ex.StackTrace));
-                //if (ex.InnerException != null)
-                //{
-                //    log.Error(String.Format("Inner Exception: [{0}: {1}]\r\nStack Trace:\r\n{2}",
-                //        ex.InnerException.Source, ex.InnerException.Message, ex.InnerException.StackTrace));
-                //}
-                return "-1";
+                throw new Exception("FileIsNull", ex);
             }
             return "-1";
         }
@@ -289,40 +270,6 @@ namespace GoogleServices
                     request.Upload();
                 }
 
-
-                /////////////////////////
-                //var batch = new BatchRequest(service);
-                //BatchRequest.OnResponse<Permission> callback = delegate(
-                //    Permission permission,
-                //    RequestError error,
-                //    int index,
-                //    System.Net.Http.HttpResponseMessage message)
-                //{
-                //    if (error != null)
-                //    {
-                //        // Handle error
-                //        Console.WriteLine(error.Message);
-                //    }
-                //    else
-                //    {
-                //        Console.WriteLine("Permission ID: " + permission.Id);
-                //    }
-                //};
-
-                //Permission userPermission = new Permission()
-                //{
-                //    Type = "anyone",
-                //    Role = "owner",
-                //    EmailAddress = "ogei_apps@vivienda.gob.pe",
-                //    AllowFileDiscovery = true
-                //};
-
-                //var requestPerm = service.Permissions.Create(userPermission, request.ResponseBody.Id);
-                //request.Fields = "id";
-                //batch.Queue(requestPerm, callback);
-                //var task = batch.ExecuteAsync();
-                //////////////////////////
-
                 return request.ResponseBody.Id;
 
             }
@@ -338,7 +285,6 @@ namespace GoogleServices
                 return "-1";
             }
         }
-
 
         /// <summary>
         /// Realiza un download bajo conexion con la API
@@ -379,8 +325,11 @@ namespace GoogleServices
             return FilePath;
         }
 
-
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="FilePath"></param>
         private static void SaveStream(MemoryStream stream, string FilePath)
         {
             using (System.IO.FileStream file = new FileStream(FilePath, FileMode.Create, FileAccess.ReadWrite))
@@ -388,7 +337,6 @@ namespace GoogleServices
                 stream.WriteTo(file);
             }
         }
-
 
         /// <summary>
         /// Realiza movida de un archivo hacia otro directorio
@@ -472,42 +420,9 @@ namespace GoogleServices
             catch (Exception ex)
             {
                 throw new Exception("Request Files.Delete failed.", ex);
-                //return "-1";
             }
 
-            //return "-1";
-        }
-
-
-        /// <summary>
-        /// Elimina un archivo del repo de google drive
-        /// </summary>
-        /// <param name="files"></param>
-        public static void DeleteFile(GoogleDriveFiles file)
-        {
-            try
-            {
-                // Initial validation.
-                if (service == null)
-                    throw new ArgumentNullException("service");
-
-                if (file == null)
-                    throw new ArgumentNullException(file.Id);
-
-                // Make the request.
-                service.Files.Delete(file.Id).Execute();
-            }
-            catch (Exception ex)
-            {
-                //log.Error(String.Format("Error de comunicación: [{0}: {1}]\r\nStack Trace:\r\n{2}",
-                //     ex.Source, ex.Message, ex.StackTrace));
-                //if (ex.InnerException != null)
-                //{
-                //    log.Error(String.Format("Inner Exception: [{0}: {1}]\r\nStack Trace:\r\n{2}",
-                //        ex.InnerException.Source, ex.InnerException.Message, ex.InnerException.StackTrace));
-                //}
-                throw new Exception("Request Files.Delete failed.", ex);
-            }
+            return "-1";
         }
     }
 
@@ -524,4 +439,3 @@ namespace GoogleServices
     }
 
 }
-
